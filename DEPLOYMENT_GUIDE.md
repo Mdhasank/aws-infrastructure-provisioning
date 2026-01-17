@@ -6,12 +6,13 @@ This guide provides a detailed, step-by-step walkthrough to deploy the AWS Infra
 
 ## 📑 Table of Contents
 1. [Prerequisites](#1-prerequisites)
-2. [Master Instance Setup (Proctor Node)](#2-master-instance-setup-proctor-node)
-3. [Environment Configuration](#3-environment-configuration)
-4. [Manual Local Deployment](#4-manual-local-deployment)
-5. [Automated CI/CD with Jenkins](#5-automated-cicd-with-jenkins)
-6. [Security Best Practices](#6-security-best-practices)
-7. [Troubleshooting](#7-troubleshooting)
+2. [Generating AWS Access Keys](#2-generating-aws-access-keys)
+3. [Master Instance Setup (Proctor Node)](#3-master-instance-setup-proctor-node)
+4. [Environment Configuration](#4-environment-configuration)
+5. [Manual Local Deployment](#5-manual-local-deployment)
+6. [Automated CI/CD with Jenkins](#6-automated-cicd-with-jenkins)
+7. [Security Best Practices](#7-security-best-practices)
+8. [Troubleshooting](#8-troubleshooting)
 
 ---
 
@@ -24,7 +25,34 @@ Before starting, ensure you have:
 
 ---
 
-## 2. Master Instance Setup (Proctor Node)
+## 2. Generating AWS Access Keys
+
+### ❓ Why do you need this?
+Terraform and Jenkins need these keys to act as your "digital identity." Without them, AWS will reject any request to create servers, networks, or S3 buckets.
+
+### 🛠️ Step-by-Step Instructions:
+1. **Log in** to your [AWS Management Console](https://aws.amazon.com/console/).
+2. Search for **IAM** in the top search bar and click it.
+3. In the left sidebar, click **Users** and then click the **Create user** button.
+4. **User details**: Give it a name (e.g., `terraform-jenkins-user`) and click **Next**.
+5. **Set permissions**:
+   - Select **Attach policies directly**.
+   - Search for and check **AdministratorAccess** (Note: In production, you should use more restrictive roles).
+   - Click **Next** and then **Create user**.
+6. **Generate Keys**:
+   - Click on the the name of the user you just created.
+   - Go to the **Security credentials** tab.
+   - Scroll down to **Access keys** and click **Create access key**.
+   - Select **Command Line Interface (CLI)** as the use case.
+   - Check the box for "I understand..." and click **Next**.
+   - (Optional) Give it a tag and click **Create access key**.
+7. **⚠️ CRITICAL**: You will see your **Access Key ID** and **Secret Access Key**. 
+   - Click **Download .csv file** immediately. 
+   - **You will never see the Secret Key again after leaving this page!**
+
+---
+
+## 3. Master Instance Setup (Proctor Node)
 
 We recommend using a dedicated EC2 instance to manage your infrastructure deployments.
 
