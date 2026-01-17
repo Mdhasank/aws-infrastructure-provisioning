@@ -35,7 +35,7 @@ pipeline {
 
     post {
         always {
-            cleanWs()
+            echo 'Pipeline execution finished.'
         }
         success {
             echo 'Infrastructure provisioned successfully!'

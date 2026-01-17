@@ -177,8 +177,35 @@ Before running the pipeline, update the following files:
 
 ## 🧹 Resource Cleanup
 
-To avoid charges:
-```bash
-terraform destroy -auto-approve
-```
-Or use a "Destroy" stage in your Jenkins pipeline.
+To avoid unexpected AWS charges, you must destroy the infrastructure when finished. 
+
+### Manual Resource Destruction (as Root)
+If you need to destroy resources from the terminal, you must navigate to the specific folder where Jenkins cloned your project.
+
+1. **Locate your workspace**:
+   Run this command to see the names of your Jenkins projects:
+   ```bash
+   ls /var/lib/jenkins/workspace/
+   ```
+
+2. **Navigate to the folder**:
+   Replace `AWS-Infrastructure` with the name you saw in previous step:
+   ```bash
+   cd /var/lib/jenkins/workspace/AWS-Infrastructure
+   ```
+
+3. **Execute Destroy**:
+   ```bash
+   terraform init
+   terraform destroy -auto-approve
+   ```
+
+**Pro-Tips for Manual Cleanup:**
+- **Already Root?**: If your prompt shows `[root@...]`, you don't need `sudo`.
+- **Backend Sync**: Always run `terraform init` before `destroy` to ensure your terminal is synced with the S3 state file.
+- **Credential Check**: If it says "Access Denied", run `aws configure` to re-verify your keys.
+
+---
+
+## 🏁 Conclusion
+You now have a professional, automated infrastructure pipeline. For production use, remember to transition to private subnets and use IAM Roles instead of static credentials.
