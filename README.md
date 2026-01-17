@@ -1,150 +1,95 @@
-# AWS Infrastructure Provisioning
+# ☁️ AWS Infrastructure Provisioning with Terraform & Jenkins
 
-A comprehensive Infrastructure as Code (IaC) project to automate the provisioning of AWS resources using Terraform and Jenkins. This guide provides a step-by-step process to set up your **Master EC2 Instance (Fedora)** and configure the CI/CD pipeline.
+[![Terraform](https://img.shields.io/badge/Terraform-7B42BC?style=for-the-badge&logo=terraform&logoColor=white)](https://www.terraform.io/)
+[![AWS](https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white)](https://aws.amazon.com/)
+[![Jenkins](https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white)](https://www.jenkins.io/)
 
----
-
-## 🚀 Project Overview
-
-This project automates the creation of a complete VPC environment, including:
-- **VPC & Networking**: Subnets, Internet Gateway, and Route Tables.
-- **Security**: Security Groups for SSH and HTTP access.
-- **Compute**: EC2 instances provisioned via Terraform.
-- **CI/CD**: Automated deployment using Jenkins.
+A professional-grade Infrastructure as Code (IaC) solution for automated AWS resource provisioning. This project leverages **Terraform** for declarative infrastructure management and **Jenkins** for robust CI/CD pipeline automation.
 
 ---
 
-## 🛠️ Step 1: Master EC2 Instance Setup
+## 🏗️ Architecture Overview
 
-First, launch a Fedora Linux EC2 instance in your AWS Console to act as your **Master Node**.
+This project automates the deployment of a secure, scalable AWS environment:
 
-1. **Launch Instance**: Select **Fedora** AMI (t3.micro or larger recommended).
-2. **Security Group**: Ensure Port **22 (SSH)** and **8080 (Jenkins)** are open.
-3. **Connect**: SSH into your instance:
-   ```bash
-   ssh -i your-key.pem fedora@<your-instance-ip>
-   ```
-
----
-
-## 📦 Step 2: Install Essential Tools
-
-Once logged in, run the following commands to install the required tools.
-
-### 1. Update System
-```bash
-sudo dnf update -y
-```
-
-### 2. Install Git
-```bash
-sudo dnf install git -y
-```
-
-### 3. Install Terraform
-```bash
-sudo dnf install -y dnf-plugins-core
-sudo dnf config-manager --add-repo https://rpm.releases.hashicorp.com/fedora/hashicorp.repo
-sudo dnf install terraform -y
-```
-
-### 4. Install AWS CLI & Configure
-```bash
-sudo dnf install awscli2 -y
-# Configure your AWS credentials
-aws configure
-```
-*Enter your Access Key, Secret Key, and default region (e.g., `us-east-1`).*
+- **Virtual Private Cloud (VPC)**: Custom networking layer with a public subnet.
+- **Connectivity**: Internet Gateway and optimized Route Tables for external access.
+- **Security**: Granular Security Groups allowing controlled SSH and HTTP traffic.
+- **Compute**: Elastic Compute Cloud (EC2) instances provisioned with dynamic configurations.
+- **CI/CD**: Fully automated delivery pipeline using Jenkins for seamless infrastructure updates.
 
 ---
 
-## 🏗️ Step 3: Jenkins Installation & Setup
+## 🛠️ Tech Stack
 
-### 1. Install Java (Required for Jenkins)
-```bash
-sudo dnf install java-17-openjdk -y
-```
+- **Provisioning**: Terraform v1.0+
+- **Cloud Provider**: Amazon Web Services (AWS)
+- **CI/CD Orchestration**: Jenkins
+- **Operating System**: Fedora/Amazon Linux
+- **Language**: HashiCorp Configuration Language (HCL)
 
-### 2. Add Jenkins Repository & Install
-```bash
-sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
-sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
-sudo dnf install jenkins -y
-```
+---
 
-### 3. Start and Enable Jenkins
-```bash
-sudo systemctl enable jenkins
-sudo systemctl start jenkins
-```
+## � Project Structure
 
-### 4. Configure Firewall
 ```bash
-sudo firewall-cmd --permanent --add-port=8080/tcp
-sudo firewall-cmd --reload
+aws-infrastructure-provisioning/
+├── 📄 Jenkinsfile          # Multi-stage CI/CD pipeline definition
+├── 📄 provider.tf          # AWS provider and region configuration
+├── 📄 vpc.tf               # VPC, Subnet, IGW, and Route Table logic
+├── 📄 security_groups.tf    # Firewall and network access rules
+├── 📄 ec2.tf                # Compute instance definitions
+├── 📄 variables.tf         # Parameterized input variables
+├── 📄 outputs.tf           # Exported infrastructure metadata
+└── 📄 backend.tf           # Remote state management (S3/Local)
 ```
 
 ---
 
-## ⚙️ Step 4: Initial Jenkins Configuration
+## � Quick Start
 
-1. **Access Jenkins**: Open your browser and go to `http://<your-ec2-ip>:8080`.
-2. **Unlock Jenkins**: Get the admin password from your terminal:
-   ```bash
-   sudo cat /var/lib/jenkins/secrets/initialAdminPassword
-   ```
-3. **Install Plugins**: Choose **"Install Suggested Plugins"**.
-4. **Create Admin User**: Follow the prompts to set up your admin account.
+### 1. Prerequisites
+- [AWS Account](https://aws.amazon.com/) with IAM credentials.
+- [Terraform](https://developer.hashicorp.com/terraform/downloads) installed locally.
+- [AWS CLI](https://aws.amazon.com/cli/) configured (`aws configure`).
 
----
+### 2. Manual Deployment
+```bash
+# Initialize Terraform
+terraform init
 
-## 🔗 Step 5: Configure Jenkins Pipeline
+# Preview changes
+terraform plan
 
-### 1. Add AWS Credentials
-- Go to **Manage Jenkins** → **Credentials** → **System** → **Global credentials**.
-- Click **Add Credentials**.
-- Kind: **Secret text** (or AWS Credentials plugin if installed).
-- Create two credentials:
-  - ID: `AWS_ACCESS_KEY_ID`
-  - ID: `AWS_SECRET_ACCESS_KEY`
-
-### 2. Create Pipeline Job
-- Click **New Item** → Enter name (e.g., `AWS-Infra`) → Select **Pipeline**.
-- In the **Pipeline** section:
-  - Definition: **Pipeline script from SCM**.
-  - SCM: **Git**.
-  - Repository URL: `<your-repo-url>`.
-  - Script Path: `Jenkinsfile`.
+# Apply infrastructure
+terraform apply -auto-approve
+```
 
 ---
 
-## 🚀 Step 6: Run the Provisioning
+## � In-Depth Documentation
 
-1. Click **Build Now** in your Jenkins job.
-2. Jenkins will:
-   - Clone the code.
-   - Run `terraform init`.
-   - Run `terraform plan`.
-   - Run `terraform apply` (auto-approving the changes).
+For detailed setup instructions, including Jenkins installation, AWS credential management, and step-by-step pipeline configuration, please refer to our:
+
+👉 **[Detailed Deployment Guide](DEPLOYMENT_GUIDE.md)**
 
 ---
 
 ## 🧹 Cleanup
 
-To avoid AWS charges, destroy the infrastructure when finished:
+To prevent unnecessary AWS costs, destroy the provisioned resources when no longer needed:
 ```bash
 terraform destroy -auto-approve
 ```
 
 ---
 
-## 📂 Project Structure
-```text
-├── provider.tf        # AWS Provider config
-├── vpc.tf             # Networking setup
-├── security_groups.tf # Firewall rules
-├── ec2.tf             # Instance definition
-├── variables.tf       # Input variables
-├── outputs.tf         # Useful output data
-└── Jenkinsfile        # CI/CD Pipeline
-```
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
